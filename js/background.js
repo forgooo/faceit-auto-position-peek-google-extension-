@@ -3,10 +3,14 @@
 
 // Listen for messages from content script and perform actions
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
-    // Check if the message contains data about the picked map
     if (message.mapPicked) {
         // Log the picked map to the console
         console.log('Map picked:', message.mapPicked);
+    }
+
+    if (message.test) {
+        // Log the picked map to the console
+        console.log(message.test);
     }
 
     // Check if the message contains data to be saved to Chrome storage
