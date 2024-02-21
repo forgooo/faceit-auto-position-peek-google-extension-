@@ -22,11 +22,31 @@ function extractMapPickedInfo() {
 
         mapNames.forEach(mapName => {
             if (stringHTML.includes(mapName)) {
-                console.log("Map picked:", mapName);
                 handleMapPick(mapName);
+                chrome.storage.sync.get('autoMessage', function(data) {
+                    var savedPositions = data.autoMessage[message.mapPicked.toLowerCase()];
+                    sendMessageToChat(savedPositions);
+                });
             }
         });
     });
+}
+
+function sendMessageToChat(message) {
+    // Identify the chat input field element
+    const chatInput = document.querySelector('textarea[placeholder*="Message"]');
+    if (chatInput) {
+        // Fill the chat input field with the message
+        chatInput.value = message;
+
+        // Trigger a 'input' event on the input field to simulate user input (if necessary)
+        chatInput.dispatchEvent(new Event('input'));
+        
+        // Trigger a 'keydown' event on the input field to simulate Enter key press
+        chatInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    } else {
+        console.error('Chat input field not found.');
+    }
 }
 
 // Call the function initially when DOM content is loaded

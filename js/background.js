@@ -6,6 +6,10 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     if (message.mapPicked) {
         // Log the picked map to the console
         console.log('Map picked:', message.mapPicked);
+        chrome.storage.sync.get('autoMessage', function(data) {
+            var savedPositions = data.autoMessage[message.mapPicked.toLowerCase()];
+            console.log(savedPositions);
+        });
     }
 
     if (message.test) {
