@@ -22,15 +22,15 @@ function extractMapPickedInfo() {
 
         mapNames.forEach(mapName => {
             if (stringHTML.includes(mapName)) {
-                handleMapPick(mapName);
-                chrome.storage.sync.get('autoMessage', function(data) {
-                    var savedPositions = data.autoMessage[message.mapPicked.toLowerCase()];
-                    sendMessageToChat(savedPositions);
-                });
+                if (!localStorage.getItem('messageSent')) {
+                    handleMapPick(mapName);
+                    localStorage.setItem('messageSent', 'true');
+                }
             }
         });
     });
 }
+
 
 function sendMessageToChat(message) {
     // Identify the chat input field element
