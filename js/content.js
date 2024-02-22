@@ -22,15 +22,12 @@ function extractMapPickedInfo() {
 
         mapNames.forEach(mapName => {
             if (stringHTML.includes(mapName)) {
-                if (!localStorage.getItem('messageSent')) {
-                    handleMapPick(mapName);
-                    localStorage.setItem('messageSent', 'true');
-                }
+                handleMapPick(mapName);
+                observer.disconnect(); // Disconnect the observer when a map is picked
             }
         });
     });
 }
-
 
 function sendMessageToChat(message) {
     // Identify the chat input field element
@@ -49,9 +46,21 @@ function sendMessageToChat(message) {
     }
 }
 
+// Function to check for URL changes and re-enable the observer
+function checkURLChange() {
+    const currentURL = window.location.href;
+    if (currentURL !== previousURL) {
+        // If URL has changed, re-enable the observer and set the previous URL to the current one
+        observer.observe(document.body, observerConfig); // Re-enable the observer
+        previousURL = currentURL;
+    }
+}
 
 // Call the function initially when DOM content is loaded
-document.addEventListener('DOMContentLoaded', extractMapPickedInfo);
+document.addEventListener('DOMContentLoaded', function() {
+    extractMapPickedInfo();
+    checkURLChange(); // Check URL change when DOM is loaded
+});
 
 // Create a MutationObserver to watch for changes in the document
 const observer = new MutationObserver(function(mutations) {
@@ -62,5 +71,8 @@ const observer = new MutationObserver(function(mutations) {
 // Configure the MutationObserver to watch for changes in the entire document body
 const observerConfig = { childList: true, subtree: true };
 
-// Start observing changes in the document body
-observer.observe(document.body, observerConfig);
+// Variable to store the previous URL
+let previousURL = window.location.href;
+
+// Check for URL changes periodically
+setInterval(checkURLChange, 1000); // Check every second for URL changes
