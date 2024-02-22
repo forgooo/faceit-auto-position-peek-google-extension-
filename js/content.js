@@ -35,7 +35,7 @@ function extractMapPickedInfo() {
 function sendMessageToChat(message) {
     // Identify the chat input field element
     const chatInput = document.querySelector('textarea[placeholder*="Message"]');
-    if (chatInput) {
+    if (chatInput && chatInput.closest('.chat-input')) {
         // Fill the chat input field with the message
         chatInput.value = message;
 
@@ -48,6 +48,7 @@ function sendMessageToChat(message) {
         console.error('Chat input field not found.');
     }
 }
+
 
 // Call the function initially when DOM content is loaded
 document.addEventListener('DOMContentLoaded', extractMapPickedInfo);
