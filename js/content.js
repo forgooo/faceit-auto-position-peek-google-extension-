@@ -23,28 +23,47 @@ function extractMapPickedInfo() {
         mapNames.forEach(mapName => {
             if (stringHTML.includes(mapName)) {
                 handleMapPick(mapName);
+                chrome.storage.sync.get('autoMessage', function(data) {
+                    var savedPositions = data.autoMessage[mapName.toLowerCase()];
+                    console.log(savedPositions);
+                    sendMessageToChat(savedPositions);
+                });
                 observer.disconnect(); // Disconnect the observer when a map is picked
             }
         });
     });
 }
 
+chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
+    if (message.positions) {
+        // Call sendMessageToChat function with the received positions
+        sendMessageToChat(message.positions);
+    }
+});
+
 function sendMessageToChat(message) {
-    // Identify the chat input field element
-    const chatInput = document.querySelector('textarea[placeholder*="Message"]');
-    if (chatInput && chatInput.closest('.chat-input')) {
+    Test("in");
+    // Find all textarea elements whose placeholder starts with "Message team_"
+    const textAreas = document.querySelectorAll('textarea[placeholder^="Message team_"]');
+
+    // Loop through each textarea element
+    textAreas.forEach(textArea => {
+        // Extract the team name from the placeholder attribute
+        const placeholder = textArea.getAttribute('placeholder');
+        const teamName = placeholder.replace('Message team_', ''); // Extract team name
+
         // Fill the chat input field with the message
-        chatInput.value = message;
+        textArea.value = message;
 
         // Trigger a 'input' event on the input field to simulate user input (if necessary)
-        chatInput.dispatchEvent(new Event('input'));
-        
+        textArea.dispatchEvent(new Event('input'));
+
         // Trigger a 'keydown' event on the input field to simulate Enter key press
-        chatInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
-    } else {
-        Test('Chat input field not found.');
-    }
+        textArea.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    });
 }
+
+
 
 // Function to check for URL changes and re-enable the observer
 function checkURLChange() {
