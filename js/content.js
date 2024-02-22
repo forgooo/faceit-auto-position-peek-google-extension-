@@ -42,7 +42,7 @@ function sendMessageToChat(message) {
         // Trigger a 'keydown' event on the input field to simulate Enter key press
         chatInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
     } else {
-        console.error('Chat input field not found.');
+        Test('Chat input field not found.');
     }
 }
 

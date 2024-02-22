@@ -4,7 +4,7 @@
     "version": "1.0",
     "description": "Automatically peek position to FACEIT chat when team peaks a map.",
     "permissions": [
-      "activeTab", "storage"
+      "activeTab", "storage", "scripting"
     ],
     "content_scripts": [
       {
