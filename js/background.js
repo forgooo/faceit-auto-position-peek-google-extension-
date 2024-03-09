@@ -12,6 +12,8 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
         });
     }
 
+
+
     if (message.test) {
         // Log the picked map to the console
         console.log(message.test);
@@ -21,7 +23,7 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     if (message.saveMessage) {
         // Save the message to Chrome storage
         chrome.storage.sync.set({ 'autoMessage': message.saveMessage }, function() {
-            console.log('Message saved:', message.saveMessage);
+            console.log('Position saved:', message.saveMessage);
         });
     }
     // You can add more message handling logic here if needed
