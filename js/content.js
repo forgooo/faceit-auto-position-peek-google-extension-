@@ -1,13 +1,16 @@
 // Функция для отправки сообщений в фоновый скрипт
 function sendMessageToBackground(message) {
+    console.log(`Sending message to background: ${JSON.stringify(message)}`);
     chrome.runtime.sendMessage(message);
 }
 
 function handleMapPick(mapPicked) {
+    console.log(`Map picked: ${mapPicked}`);
     sendMessageToBackground({ mapPicked });
 }
 
 function Test(test) {
+    console.log(`Test: ${test}`);
     sendMessageToBackground({ test });
 }
 
@@ -18,16 +21,26 @@ function extractMapPickedInfo() {
     mapPickContainers.forEach(container => {
         const stringHTML = container.textContent;
 
-        const mapNames = ['Overpass', 'Mirage', 'Ancient', 'Anubis', 'Nuke', 'Inferno', 'Vertigo'];
+        const mapNames = ['Dust2', 'Mirage', 'Ancient', 'Anubis', 'Nuke', 'Inferno', 'Vertigo'];
 
         mapNames.forEach(mapName => {
             if (stringHTML.includes(mapName)) {
                 handleMapPick(mapName);
-                chrome.storage.sync.get('autoMessage', function(data) {
-                    var savedPositions = data.autoMessage[mapName.toLowerCase()];
-                    console.log(savedPositions);
-                    sendMessageToChat(savedPositions);
-                });
+                setTimeout(() => {  // Добавляем задержку в 1 секунду перед отправкой сообщения
+                    chrome.storage.sync.get('autoMessage', function(data) {
+                        if (chrome.runtime.lastError) {
+                            console.error(`Error getting storage data: ${chrome.runtime.lastError}`);
+                        } else {
+                            var savedPositions = data.autoMessage ? data.autoMessage[mapName.toLowerCase()] : null;
+                            console.log(`Saved positions for ${mapName}:`, savedPositions);
+                            if (savedPositions) {
+                                sendMessageToChat(savedPositions);
+                            } else {
+                                console.warn(`No saved positions found for ${mapName}`);
+                            }
+                        }
+                    });
+                }, 1000);
                 observer.disconnect(); // Disconnect the observer when a map is picked
             }
         });
@@ -36,7 +49,7 @@ function extractMapPickedInfo() {
 
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     if (message.positions) {
-        // Call sendMessageToChat function with the received positions
+        console.log(`Received positions: ${message.positions}`);
         sendMessageToChat(message.positions);
     }
 });
@@ -46,29 +59,28 @@ function sendMessageToChat(message) {
     // Find all textarea elements whose placeholder starts with "Message team_"
     const textAreas = document.querySelectorAll('textarea[placeholder^="Message team_"]');
 
+    console.log(`Found ${textAreas.length} text area(s)`);
+
     // Loop through each textarea element
     textAreas.forEach(textArea => {
-        // Extract the team name from the placeholder attribute
-        const placeholder = textArea.getAttribute('placeholder');
-        const teamName = placeholder.replace('Message team_', ''); // Extract team name
-
         // Fill the chat input field with the message
         textArea.value = message;
 
         // Trigger a 'input' event on the input field to simulate user input (if necessary)
-        textArea.dispatchEvent(new Event('input'));
+        textArea.dispatchEvent(new Event('input', { bubbles: true }));
 
         // Trigger a 'keydown' event on the input field to simulate Enter key press
-        textArea.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+        textArea.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', keyCode: 13, which: 13, bubbles: true }));
+        Test("sended");
     });
 }
-
 
 
 // Function to check for URL changes and re-enable the observer
 function checkURLChange() {
     const currentURL = window.location.href;
     if (currentURL !== previousURL) {
+        console.log(`URL changed from ${previousURL} to ${currentURL}`);
         // If URL has changed, re-enable the observer and set the previous URL to the current one
         observer.observe(document.body, observerConfig); // Re-enable the observer
         previousURL = currentURL;
@@ -83,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Create a MutationObserver to watch for changes in the document
 const observer = new MutationObserver(function(mutations) {
+    console.log('DOM mutations detected');
     // Run the function whenever there's a change in the document
     extractMapPickedInfo();
 });
