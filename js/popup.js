@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Retrieve position data from input fields
         var miragePosition = document.getElementById('mirage').value;
         var nukePosition = document.getElementById('nuke').value;
-        var overpassPosition = document.getElementById('overpass').value;
+        var dust2Position = document.getElementById('dust2').value;
         var vertigoPosition = document.getElementById('vertigo').value;
         var ancientPosition = document.getElementById('ancient').value;
         var infernoPosition = document.getElementById('inferno').value;
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
             saveMessage: {
                 mirage: miragePosition,
                 nuke: nukePosition,
-                overpass: overpassPosition,
+                dust2: dust2Position,
                 vertigo: vertigoPosition,
                 ancient: ancientPosition,
                 inferno: infernoPosition,
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (savedPositions) {
             document.getElementById('mirage').value = savedPositions.mirage || '';
             document.getElementById('nuke').value = savedPositions.nuke || '';
-            document.getElementById('overpass').value = savedPositions.overpass || '';
+            document.getElementById('dust2').value = savedPositions.dust2 || '';
             document.getElementById('vertigo').value = savedPositions.vertigo || '';
             document.getElementById('ancient').value = savedPositions.ancient || '';
             document.getElementById('inferno').value = savedPositions.inferno || '';
